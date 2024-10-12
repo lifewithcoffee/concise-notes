@@ -12,11 +12,19 @@
   "activationEvents": [],
   "main": "./dist/extension.js",
   "contributes": {
+    "views": {
+        "explorer": [
+            {
+                "id": "wordCountView",
+                "name": "Word Count"
+            }
+        ]
+    },
     "commands": [
-      {
-        "command": "concise-notes.helloWorld",
-        "title": "Hello World"
-      }
+        {
+            "command": "extension.showWordCount",
+            "title": "Show Word Count"
+        }
     ]
   },
   "scripts": {
