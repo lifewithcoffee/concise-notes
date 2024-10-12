@@ -15,6 +15,7 @@
     "views": {
         "explorer": [
             {
+                "type": "webview",
                 "id": "wordCountView",
                 "name": "Word Count"
             }
