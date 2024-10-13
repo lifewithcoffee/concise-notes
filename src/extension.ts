@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { WordCountViewProvider } from './wordCountView';
+import { MarkdownOutlineProvider } from "./MarkdownOutlineProvider";
 
 export function activate(context: vscode.ExtensionContext) {
     console.log('Extension "wordcount" is now active!');
@@ -19,13 +20,20 @@ export function activate(context: vscode.ExtensionContext) {
     const wordCountStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
     context.subscriptions.push(wordCountStatusBarItem);
 
-		// In the activate function, add:
-		context.subscriptions.push(
-				vscode.window.registerWebviewViewProvider(
-						WordCountViewProvider.viewType,
-						new WordCountViewProvider(context.extensionUri)
-				)
-		);
+    // In the activate function, add:
+    context.subscriptions.push(
+            vscode.window.registerWebviewViewProvider(
+                    WordCountViewProvider.viewType,
+                    new WordCountViewProvider(context.extensionUri)
+            )
+    );
+
+    context.subscriptions.push(
+        vscode.window.registerWebviewViewProvider(
+            MarkdownOutlineProvider.viewType, 
+            new MarkdownOutlineProvider(context.extensionUri)
+        )
+    );
 
     vscode.window.onDidChangeActiveTextEditor(updateWordCount);
     vscode.workspace.onDidChangeTextDocument(updateWordCount);
