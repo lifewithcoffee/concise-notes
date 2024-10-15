@@ -19,7 +19,7 @@ export class MarkdownOutlineProvider implements vscode.WebviewViewProvider {
             localResourceRoots: [this._extensionUri]
         };
     
-        webviewView.webview.html = this._getHtmlForWebview2(webviewView.webview);
+        webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
     
         webviewView.webview.onDidReceiveMessage(message => {
             if (message.type === 'jumpToLine') {
@@ -68,44 +68,6 @@ export class MarkdownOutlineProvider implements vscode.WebviewViewProvider {
     }
 
     private _getHtmlForWebview(webview: vscode.Webview): string {
-      const nonce = this.getNonce();
-  
-      return `
-          <!DOCTYPE html>
-          <html lang="en">
-          <head>
-              <meta charset="UTF-8">
-              <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
-              <meta name="viewport" content="width=device-width, initial-scale=1.0">
-              <title>Markdown Outline</title>
-          </head>
-          <body>
-              <ul id="outline"></ul>
-  
-              <script nonce="${nonce}">
-                  const vscode = acquireVsCodeApi();
-  
-                  window.addEventListener('message', event => {
-                      const outline = event.data.body;
-                      const outlineList = document.getElementById('outline');
-                      outlineList.innerHTML = '';
-  
-                      outline.forEach(item => {
-                          const listItem = document.createElement('li');
-                          listItem.textContent = item.title;
-                          listItem.addEventListener('click', () => {
-                              vscode.postMessage({ type: 'jumpToLine', line: item.line });
-                          });
-                          outlineList.appendChild(listItem);
-                      });
-                  });
-              </script>
-          </body>
-          </html>
-      `;
-    }
-  
-    private _getHtmlForWebview2(webview: vscode.Webview): string {
     const nonce = this.getNonce();
 
     return `
