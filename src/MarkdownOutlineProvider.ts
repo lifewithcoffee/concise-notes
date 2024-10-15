@@ -42,25 +42,25 @@ export class MarkdownOutlineProvider implements vscode.WebviewViewProvider {
   
 
     private update() {
-      const editor = vscode.window.activeTextEditor;
-  
-      if (editor && editor.document.languageId === 'markdown') {
-          const outline = this.getMarkdownOutline(editor.document.getText());
-          this._view?.webview.postMessage({ type: 'update', body: outline });
-      }
+        const editor = vscode.window.activeTextEditor;
+
+        if (editor && editor.document.languageId === 'markdown') {
+            const outline = this.getMarkdownOutline(editor.document.getText());
+            this._view?.webview.postMessage({ type: 'update', body: outline });
+        }
     }
   
-    private getMarkdownOutline(text: string): { title: string, line: number }[] {
+    private getMarkdownOutline(text: string): { title: string, line: number, indent: number }[] {
         const lines = text.split('\n');
-        const outline: { title: string, line: number }[] = [];
+        const outline: { title: string, line: number, indent: number }[] = [];
 
         const regex = /^(#{1,6})\s+(.+)/;  // Matches Markdown headers (e.g., # Title, ## Subtitle)
         lines.forEach((line, index) => {
             const match = line.match(regex);
             if (match) {
                 const level = match[1].length;
-                const title = `${' '.repeat(level - 1)}- ${match[2]}`;
-                outline.push({ title, line: index });
+                const title = match[2];
+                outline.push({ title, line: index, indent: level });
             }
         });
 
@@ -106,12 +106,12 @@ export class MarkdownOutlineProvider implements vscode.WebviewViewProvider {
     }
   
     private _getHtmlForWebview2(webview: vscode.Webview): string {
-      const nonce = this.getNonce();
+    const nonce = this.getNonce();
 
-      return `
-          <!DOCTYPE html>
-          <html lang="en">
-          <head>
+    return `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
             <meta charset="UTF-8">
             <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}';">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -138,32 +138,32 @@ export class MarkdownOutlineProvider implements vscode.WebviewViewProvider {
                 }
             </style>
         </head>
-          <body>
-              <ul id="outline"></ul>
+        <body>
+            <ul id="outline"></ul>
 
-              <script nonce="${nonce}">
-                  const vscode = acquireVsCodeApi();
+            <script nonce="${nonce}">
+                const vscode = acquireVsCodeApi();
 
-                  window.addEventListener('message', event => {
-                      const outline = event.data.body;
-                      const outlineList = document.getElementById('outline');
-                      outlineList.innerHTML = '';
+                window.addEventListener('message', event => {
+                    const outline = event.data.body;
+                    const outlineList = document.getElementById('outline');
+                    outlineList.innerHTML = '';
 
-                      outline.forEach(item => {
-                          const listItem = document.createElement('li');
-                          listItem.textContent = item.title;
-                          listItem.addEventListener('click', () => {
-                              vscode.postMessage({ type: 'jumpToLine', line: item.line });
-                          });
-                          outlineList.appendChild(listItem);
-                      });
-                  });
-              </script>
-          </body>
-          </html>
-      `;
+                    outline.forEach(item => {
+                        const listItem = document.createElement('li');
+                        listItem.textContent = '#'.repeat(item.indent) + ' ' + item.title;
+                        listItem.addEventListener('click', () => {
+                            vscode.postMessage({ type: 'jumpToLine', line: item.line });
+                        });
+                        outlineList.appendChild(listItem);
+                    });
+                });
+            </script>
+        </body>
+        </html>
+    `;
     }
-
+    
     private getNonce() {
         let text = '';
         const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
