@@ -6,6 +6,8 @@
   * src/wordCountView.ts
   * src/MarkdownOutlineProvider.ts
 
+- Open in vscode and press F5 to run
+
 ## Extension Settings
 
 Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
