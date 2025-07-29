@@ -67,6 +67,45 @@ export class MarkdownOutlineProvider implements vscode.WebviewViewProvider {
         return outline;
     }
 
+    // RL: not tested
+    private getRstOutline(text: string): { title: string, line: number, indent: number }[] {
+        const lines = text.split('\n');
+        const outline: { title: string, line: number, indent: number }[] = [];
+    
+        const regex = /^([=+-]+)$/;  // Matches reStructuredText header underline
+        let title: string | null = null;
+        let level: number | null = null;
+        let underlineLevel: number | null = null;
+    
+        lines.forEach((line, index) => {
+            const match = line.match(regex);
+            if (match) {
+                if (title !== null) {
+                    // This is the underline for the previous title
+                    if (underlineLevel !== null) {
+                        outline.push({ title, line: index - 2, indent: underlineLevel });
+                    }
+                    title = null;
+                    level = null;
+                    underlineLevel = null;
+                } else {
+                    // This is the underline for the next title
+                    level = match[1].length;
+                }
+            } else if (title === null && level !== null) {
+                // This is the title
+                title = line.trim();
+            }
+        });
+    
+        // If there's a title left over at the end, add it to the outline
+        if (title !== null && level !== null) {
+            outline.push({ title, line: lines.length - 1, indent: level });
+        }
+    
+        return outline;
+    }
+
     private _getHtmlForWebview(webview: vscode.Webview): string {
     const nonce = this.getNonce();
 
