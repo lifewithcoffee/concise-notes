@@ -12,11 +12,27 @@
   "activationEvents": [],
   "main": "./dist/extension.js",
   "contributes": {
+    "views": {
+        "explorer": [
+            {
+                "type": "webview",
+                "id": "wordCountView",
+                "name": "Word Count"
+            }
+        ],
+        "outline-view": [
+            {
+                "type": "webview",
+                "id": "markdownOutline",
+                "name": "Markdown Outline"
+            }
+      ]
+    },
     "commands": [
-      {
-        "command": "concise-notes.helloWorld",
-        "title": "Hello World"
-      }
+        {
+            "command": "extension.showWordCount",
+            "title": "Show Word Count"
+        }
     ]
   },
   "scripts": {
