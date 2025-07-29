@@ -19,7 +19,14 @@
                 "id": "wordCountView",
                 "name": "Word Count"
             }
-        ]
+        ],
+        "outline-view": [
+            {
+                "type": "webview",
+                "id": "markdownOutline",
+                "name": "Markdown Outline"
+            }
+      ]
     },
     "commands": [
         {
